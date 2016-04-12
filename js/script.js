@@ -2,47 +2,25 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
+var formatDate = d3.time.format("%Y-%m-%d");
 
 var x = d3.time.scale()
     .range([0, width]);
 
-
 var y = d3.scale.linear()
     .range([height, 0]);
-
 
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
-
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-d3.json("unemployment_data.json", type, function(error, data) {
-	data.forEach(function(d) {
-    d.Wins = +d["observation_date"];
-    d.Pay = +d["CLMUR"];
-	});
-
-	console.log("hello, data");
-	console.log(data);
-});
-
-
-$(document).ready(function() {
-    console.log("Hello world.")
-});
-
-
-
-
-var formatDate = d3.time.format("%d-%b-%y");
-
 var line = d3.svg.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.close); });
+    .y(function(d) { return y(d.CLMUR); });
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -50,11 +28,11 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("unemployment_data.json", type, function(error, data) {
+d3.tsv("unemployment_data.tsv", type, function(error, data) {
   if (error) throw error;
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
+  y.domain(d3.extent(data, function(d) { return d.CLMUR; }));
 
   svg.append("g")
       .attr("class", "x axis")
@@ -79,10 +57,6 @@ d3.json("unemployment_data.json", type, function(error, data) {
 
 function type(d) {
   d.date = formatDate.parse(d.date);
-  d.close = +d.close;
+  d.CLMUR = +d.CLMUR;
   return d;
 }
-
-
-
-
